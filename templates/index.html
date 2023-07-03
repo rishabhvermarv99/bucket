@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>S3 File Manager - {{ bucket_name }}</title>
+</head>
+<body>
+
+    <h1>list buckets</h1>
+
+    <table>
+        <tr>Name</tr>
+        <tbody>
+            {% for bucket in buckets %}
+            <tr>
+                <td>{{ bucket['Name'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+    <h1>S3 File Manager - {{ bucket_name }}</h1>
+    <h2>Contents:</h2>
+    {% if contents %}
+        <ul>
+            {% for item in contents %}
+                <li>{{ item['Key'] }} <a href="/delete_file/{{ bucket_name }}/{{ item['Key'] }}">Delete</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No files found.</p>
+    {% endif %}
+
+    <h2>Upload a File:</h2>
+    <form action="/upload_file" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <input type="hidden" name="bucket_name" value="{{ bucket_name }}">
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Delete Bucket:</h2>
+    <form action="/delete_bucket/{{ bucket_name }}" method="get">
+        <button type="submit">Delete Bucket</button>
+    </form>
+
+    <h2>Copy File:</h2>
+    <form action="/copy_file" method="post">
+        <input type="text" name="source_bucket" placeholder="Source Bucket" required>
+        <input type="text" name="destination_bucket" placeholder="Destination Bucket" required>
+        <input type="text" name="key" placeholder="File Key" required>
+        <button type="submit">Copy</button>
+    </form>
+
+    <h2>Move File:</h2>
+    <form action="/move_file" method="post">
+        <input type="text" name="source_bucket" placeholder="Source Bucket" required>
+        <input type="text" name="destination_bucket" placeholder="Destination Bucket" required>
+        <input type="text" name="key" placeholder="File Key" required>
+        <button type="submit">Move</button>
+    </form>
+</body>
+</html>
