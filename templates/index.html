@@ -1,65 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>S3 File Manager - {{ bucket_name }}</title>
+    <title>AWS S3 Bucket Operations</title>
 </head>
 <body>
+    <h1>AWS S3 Bucket Operations</h1>
 
-    <h1>list buckets</h1>
+    <h2>Buckets:</h2>
+    <ul>
+        {% for bucket in buckets %}
+            <li>{{ bucket.Name }}</li>
+        {% endfor %}
+    </ul>
 
-    <table>
-        <tr>Name</tr>
-        <tbody>
-            {% for bucket in buckets %}
-            <tr>
-                <td>{{ bucket['Name'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-
-
-
-    <h1>S3 File Manager - {{ bucket_name }}</h1>
-    <h2>Contents:</h2>
-    {% if contents %}
-        <ul>
-            {% for item in contents %}
-                <li>{{ item['Key'] }} <a href="/delete_file/{{ bucket_name }}/{{ item['Key'] }}">Delete</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No files found.</p>
-    {% endif %}
-
-    <h2>Upload a File:</h2>
-    <form action="/upload_file" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <input type="hidden" name="bucket_name" value="{{ bucket_name }}">
-        <button type="submit">Upload</button>
+    <h2>Create Bucket:</h2>
+    <form action="/create_bucket" method="POST" placeholder="Enter bucket name">
+        <input type="text" name="bucket_name" >
+        <input type="submit" value="Create Bucket">
     </form>
 
     <h2>Delete Bucket:</h2>
-    <form action="/delete_bucket/{{ bucket_name }}" method="get">
-        <button type="submit">Delete Bucket</button>
+    <form action="/delete_bucket" method="POST">
+        <input type="text" name="bucket_name" placeholder="Enter bucket name">
+        <input type="submit" value="Delete Bucket">
+    </form>
+
+    <h2>Create Folder:</h2>
+    <form action="/create_folder" method="POST">
+        <input type="text" name="bucket_name" placeholder="Enter bucket name">
+        <input type="text" name="folder_name" placeholder="Enter folder name">
+        <input type="submit" value="Create Folder">
+    </form>
+
+    <h2>Delete Folder:</h2>
+    <form action="/delete_folder" method="POST">
+        <input type="text" name="bucket_name" placeholder="Enter bucket name">
+        <input type="text" name="folder_name" placeholder="Enter folder name">
+        <input type="submit" value="Delete Folder">
+    </form>
+
+    <h2>Upload File:</h2>
+    <form action="/upload_file" method="POST" enctype="multipart/form-data">
+        <input type="text" name="bucket_name" placeholder="Enter bucket name">
+        <input type="text" name="folder_name" placeholder="Enter folder name">
+        <input type="file" name="file">
+        <input type="submit" value="Upload File">
     </form>
 
     <h2>Copy File:</h2>
-    <form action="/copy_file" method="post">
-        <input type="text" name="source_bucket" placeholder="Source Bucket" required>
-        <input type="text" name="destination_bucket" placeholder="Destination Bucket" required>
-        <input type="text" name="key" placeholder="File Key" required>
-        <button type="submit">Copy</button>
+    <form action="/copy_file" method="POST">
+        <input type="text" name="src_bucket" placeholder="Enter source bucket">
+        <input type="text" name="src_file_key" placeholder="Enter source file key">
+        <input type="text" name="dest_bucket" placeholder="Enter destination bucket">
+        <input type="text" name="dest_file_key" placeholder="Enter destination file key">
+        <input type="submit" value="Copy File">
     </form>
 
     <h2>Move File:</h2>
-    <form action="/move_file" method="post">
-        <input type="text" name="source_bucket" placeholder="Source Bucket" required>
-        <input type="text" name="destination_bucket" placeholder="Destination Bucket" required>
-        <input type="text" name="key" placeholder="File Key" required>
-        <button type="submit">Move</button>
+    <form action="/move_file" method="POST">
+        <input type="text" name="src_bucket" placeholder="Enter source bucket">
+        <input type="text" name="src_file_key" placeholder="Enter source file key">
+        <input type="text" name="dest_bucket" placeholder="Enter destination bucket">
+        <input type="text" name="dest_file_key" placeholder="Enter destination file key">
+        <input type="submit" value="Move File">
     </form>
+
+    <h2>Contents of a Folder:</h2>
+    <ul>
+        {% for folder in folders %}
+            <li><strong>Folder:</strong> {{ folder.Key }}</li>
+        {% endfor %}
+        {% for file in files %}
+            <li><strong>File:</strong> {{ file.Key }}</li>
+        {% endfor %}
+    </ul>
+    {% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flashes">
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
 </body>
 </html>
